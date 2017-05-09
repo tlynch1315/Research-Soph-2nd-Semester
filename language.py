@@ -25,6 +25,16 @@ def python(lines):
     print ' '.join(package)
     print 'python'
 
+# FUNCTION THAT CREATES PACKAGE FOR C++ EXECUTABLES
+def cpp(program):
+    f = subprocess.Popen(["objdump -p " + program + " | grep NEEDED"], stdout = subprocess.PIPE, shell=True)
+    (out, err) = f.communicate()
+    print 'c++ executable'
+    for word in out.split():
+        if word == 'NEEDED':
+            continue
+        print word
+
 # Parse command line arguments
 args = sys.argv[1:]
 while len(args) and args[0].startswith('-') and len(args[0]) > 1:
@@ -45,16 +55,8 @@ if '.py' in args[0]:
 else:
     f = subprocess.Popen(["ldd  -v " + args[0]], stdout=subprocess.PIPE, shell=True)
     (out, err) = f.communicate()
+    #print type(out)
     if 'c++' in out:
-        print 'c++ executable'
-    print 'ldd output: {}'.format(out)
-    print type(f)
-    #f = os.system('ldd -v ' + args[0])
-    #if 'c++' in f:
-    #  print 'c++'
-    print type(f)
-    #lines = f.readlines()
-    #for line in lines:
-     #  for word in line.split():
-    #    if 'gnu' in word:
-    #      print line
+        cpp(args[0])
+        sys.exit(0)
+ 
